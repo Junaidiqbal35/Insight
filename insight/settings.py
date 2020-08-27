@@ -17,7 +17,7 @@ SECRET_KEY = '*6st(_hgwa&z#$fssuk@qm0#93$^p135@%kffc00-tng(7jq%&'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ['http://juni35.pythonanywhere.com', '127.0.0.1']
+ALLOWED_HOSTS = ['insight-asma.herokuapp.com', '127.0.0.1']
 
 # Application definition
 
@@ -110,7 +110,7 @@ TIME_ZONE = 'UTC'
 
 USE_I18N = True
 
-USE_L10N = True
+USE_L10N = False
 
 USE_TZ = True
 
@@ -131,7 +131,6 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # Location of uploaded image files on the server.
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
-
 
 
 

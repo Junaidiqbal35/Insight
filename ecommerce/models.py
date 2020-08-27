@@ -38,7 +38,7 @@ class Product(models.Model):
 
 def user_directory_path(instance, filename):
     # file will be uploaded to MEDIA_ROOT/user_<id>/<filename>
-    product_location = 'ar/ecommerce/media/products/' + str(instance.product.id)
+    product_location = '/ar/ecommerce/media/products/' + str(instance.product.id)
     fs = FileSystemStorage(location=product_location)
     uploaded_file_url = product_location + '/' + filename
     return uploaded_file_url

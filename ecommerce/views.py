@@ -800,7 +800,7 @@ def payment_paypal(request):
     description = request.POST.get('description')
     gateway = braintree.BraintreeGateway(access_token=paypal_access_token)
     result = gateway.transaction.sale({
-        "amount": 30,
+        "amount": amount,
         "merchant_account_id": "USD",
         "payment_method_nonce": payment_method_nonce,
         "options": {

@@ -1,5 +1,5 @@
 {% extends "ecommerce/base.html" %}
-{% load humanize static %}
+{% load static %}
 {% load i18n %}
 {% block content %}
 	
@@ -43,7 +43,7 @@
 									<div class='list-group-item border-top-0 py-2'>
 										<i class='fa fa-shopping-cart fa-2x pr-3 pt-3 float-left'></i>
 										<p class='list-group-item-text mb-0'>{% trans "Price" %}</p>
-										<h4 class='list-group-item-heading'>{{ currency }} {{ item.price|intcomma }}</h4>
+										<h4 class='list-group-item-heading'>{{ currency }} {{ item.price }}</h4>
 									</div>
 									<div class='list-group-item py-2'>
 										<i class='fa fa-cubes fa-2x pr-3 pt-3 float-left'></i>
