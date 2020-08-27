@@ -82,80 +82,25 @@ def products(request):
             all_posts = Product.objects.exclude(status=0).order_by(sort + name)[start:cur_page * max]
             count = Product.objects.exclude(status=0).count()
 
-        if all_posts:
-            cart_items = request.session
-
-            # Create an empty cart object if it does not exist yet
-            if not cart_items.has_key("cart"):
-                cart_items["cart"] = {}
-
-            for post in all_posts:
-                in_cart = True if cart_items['cart'].get(str(post.id)) else False
-                action = 'delete' if in_cart else 'add'
-                status = 0 if in_cart else 1
-
-                if in_cart:
-                    button = "<input type='submit' value='Remove from Cart' class='btn btn-block btn-danger' />"
-                else:
-                    button = '''
-						<div class='input-group'>
-							<div class="input-group mb-2">
-								<div class="input-group-prepend">
-									<div class="input-group-text">الكمية</div>
-								</div>
-								<input type='number' id='quantity' min='1' max='%d' class='form-control' name='quantity' value='1' />
-								<div class="input-group-append">
-									<button type='submit' class='btn btn-primary'>اضافة الى السلة</button>
-								</div>
-							</div>
-						</div>
-					''' % (post.quantity)
-
-                pagination_content += '''
-					<div class='col-md-3 col-sm-6'>
-						<div class='card mb-2'>
-							<div class='card-header'>%s</div>
-							<div class='card-body p-0'>
-								<a href='%s'>
-									<img src='%s' width='%s' class='img-responsive'>
-								</a>
-								<div class='list-group list-group-flush'>
-									<div class='list-group-item border-top-0 py-2'>
-										<i class='fa fa-shopping-cart fa-2x pr-3 pt-3 float-left'></i>
-										<p class='list-group-item-text mb-0'>السعر</p>
-										<h4 class='list-group-item-heading'>%s %s</h4>
-									</div>
-									<div class='list-group-item py-2'>
-										<i class='fa fa-cubes fa-2x pr-3 pt-3 float-left'></i>
-										<p class='list-group-item-text mb-0'>الكمية</p>
-										<h4 class='list-group-item-heading'>%d</h4>
-									</div>
-								</div>
-							</div> 
-							<div class='card-footer'>
-								<form method='post' action='/ecommerce/cart/'>
-									<input type='hidden' name='redirect' value='/ecommerce/products/?cart=%s&page=%s' />
-									<input type='hidden' name='action' value='%s' />
-									<input type='hidden' name='item_id' value='%d' />
-									%s
-								</form>
-							</div>
-						</div>
-					</div>
-				''' % (
-                    post.name, Helpers.get_path('product/' + str(post.id)), Helpers.get_path(post.featured_image),
-                    '100%',
-                    EcommerceConfig.currency, intcomma(post.price), post.quantity, status, cur_page, action, post.id,
-                    button)
-        else:
-            pagination_content += "<p class='bg-danger'>No results</p>"
-
-        return JsonResponse({
-            'content': pagination_content,
-            'navigation': Helpers.nagivation_list(count, per_page, cur_page)
-        })
     else:
-        return render(request, Helpers.get_url('product/index.html'))
+        return render(request, 'ecommerce/product/index.html')
+
+
+def product_search(request):
+    queryset_list = Product.objects.order_by('-date')
+    if 'keywords' in request.GET:
+        keywords = request.GET['keywords']
+        if keywords:
+            queryset_list = queryset_list.filter(excerpt__icontains=keywords)
+    if 'price' in request.GET:
+        price = request.GET['price']
+        queryset_list = queryset_list.filter(price__icontains=price)
+
+    context = {
+        'products': queryset_list,
+        'values': request.GET
+    }
+    return render(request, Helpers.get_url('product/search.html'), context)
 
 
 def about(request):
@@ -420,7 +365,7 @@ def user_product_update(request, product_id):
                             image=uploaded_file_url
                         )
                         image.save()
-                    product.featured_image =err_succ['images'][0]
+                    product.featured_image = err_succ['images'][0]
                     product.save()
 
                 # Return a success message.
@@ -817,7 +762,6 @@ def payment_paypal(request):
         order.braintree_id = result.transaction.id
         order.save()
         return JsonResponse({'statusCode': '1', 'amount': amount})
-
 
     return JsonResponse({'statusCode': '2'})
 
